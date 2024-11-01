@@ -1,0 +1,429 @@
+{
+  "name": "Jobs Monitoring w Filter",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "const cities = [\n  \"Chicago, IL\",\n  \"Seattle, WA\",\n  \"California, USA\",\n  \"Bettendorf, IA\"\n]\n\nreturn {\n \"json\": {\n   cities\n }\n}"
+      },
+      "id": "a6620c43-a0d1-4907-888b-65327993c19b",
+      "name": "Cities",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1180,
+        -440
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "cities",
+        "options": {
+          "destinationFieldName": "city"
+        }
+      },
+      "id": "4b871792-b267-43e6-9e8b-d0b2354fffff",
+      "name": "Split Cities",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -1040,
+        -440
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://www.google.com/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "=\"(UX|Front-end) (Engineer|Developer)\" near {{ $json.city }} in the last 3 days"
+            },
+            {
+              "name": "ibp",
+              "value": "htl;jobs"
+            },
+            {
+              "name": "brd_json",
+              "value": "1"
+            }
+          ]
+        },
+        "options": {
+          "proxy": "http://brd-customer-hl_2c7c8b0d-zone-serp_api1:zp7iwqwny8no@brd.superproxy.io:22225"
+        }
+      },
+      "id": "e3409d60-80ef-4f81-b2c4-b3316b01fd60",
+      "name": "UX/Front-End Engineer Jobs",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -900,
+        -440
+      ],
+      "executeOnce": false,
+      "notes": "We can also use \"since yesterday\" in the query"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "https://www.notion.so/88a66b720f344e229449f8518a1108ab",
+          "mode": "url"
+        },
+        "title": "={{ $json.title }}",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Location|rich_text",
+              "textContent": "={{ $json.city }}"
+            },
+            {
+              "key": "Remote|checkbox",
+              "checkboxValue": "={{ !!$json.tags.find(t => t.value.match(/work from home/i)) }}"
+            },
+            {
+              "key": "Post Date|date",
+              "date": "={{ $now.minus($json.date.match(/\\d+/), $json.date.match(/hour|day/)[0]) }}"
+            },
+            {
+              "key": "Employment|rich_text",
+              "textContent": "={{ $json.employment_type || \"\" }}"
+            }
+          ]
+        },
+        "blockUi": {
+          "blockValues": [
+            {
+              "type": "heading_2",
+              "textContent": "={{ $json.highlights?.[0]?.name || \"\" }}"
+            },
+            {
+              "textContent": "={{ Array.isArray($json.highlights?.[0]?.list) ? $json.highlights[0].list.map(b => `- ${b}`).join(`\\n`).substring(0, 1997) + \"...\" : \"Not provided\" }}"
+            },
+            {
+              "type": "heading_3",
+              "textContent": "={{ $json.highlights?.[1]?.name || \"\" }}"
+            },
+            {
+              "textContent": "={{ Array.isArray($json.highlights?.[1]?.list) ? $json.highlights[1].list.map(b => `- ${b}`).join(`\\n`).substring(0, 1997) + \"...\" : \"Not provided\" }}"
+            },
+            {
+              "type": "heading_2",
+              "textContent": "={{ $json.highlights?.[2]?.name || \"\" }}"
+            },
+            {
+              "textContent": "={{ Array.isArray($json.highlights?.[2]?.list) ? $json.highlights[2].list.map(b => `- ${b}`).join(`\\n`).substring(0, 1997) + \"...\" : \"Not provided\" }}"
+            },
+            {
+              "type": "heading_2",
+              "textContent": "Description"
+            },
+            {
+              "richText": true,
+              "text": {
+                "text": [
+                  {
+                    "text": "={{ $json.description.substring(0, 1997) + \"...\" }}",
+                    "annotationUi": {
+                      "italic": true
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "heading_2",
+              "textContent": "Learn more & apply"
+            },
+            {
+              "textContent": "={{ $json.postings.map(p => `- ${p.source} | ${p.link.split(`?`)[0]}`).join(`\\n`) }}"
+            }
+          ]
+        },
+        "options": {
+          "iconType": "file",
+          "icon": "={{ $json.original_image || null }}"
+        }
+      },
+      "id": "5f283ce0-a681-4950-b852-6ed4ffbb0f70",
+      "name": "Notion",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        40,
+        -400
+      ],
+      "executeOnce": false,
+      "credentials": {
+        "notionApi": {
+          "id": "PsiWH32U1URMPWKU",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nconst allJobs = items.reduce((acc, item) => {\n  const city = item?.json?.general?.results_area;\n  const jobs = item?.json?.jobs?.items || [];\n  const jobsWithCity = jobs.map((job) => ({ ...job, city }));\n  return acc.concat(jobsWithCity);\n}, []);\n\nreturn allJobs;"
+      },
+      "id": "d83f22ac-27e5-453d-a1e0-c847dbb0aa33",
+      "name": "Combine into one list",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -720,
+        -440
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "88a66b72-0f34-4e22-9449-f8518a1108ab",
+          "mode": "list",
+          "cachedResultName": "Openings",
+          "cachedResultUrl": "https://www.notion.so/88a66b720f344e229449f8518a1108ab"
+        },
+        "limit": 100,
+        "simple": false,
+        "filterType": "manual",
+        "filters": {
+          "conditions": [
+            {
+              "key": "Post Date|date",
+              "condition": "past_month"
+            }
+          ]
+        },
+        "options": {
+          "sort": {
+            "sortValue": [
+              {
+                "key": "Post Date|date",
+                "direction": "descending"
+              }
+            ]
+          }
+        }
+      },
+      "id": "aed886a0-5904-429d-a8bd-8adec5163414",
+      "name": "Latest DB for comparison",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        -340,
+        -320
+      ],
+      "executeOnce": true,
+      "credentials": {
+        "notionApi": {
+          "id": "PsiWH32U1URMPWKU",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "advanced": true,
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "title",
+              "field2": "properties.Name.title[0].text.content"
+            },
+            {
+              "field1": "employment_type",
+              "field2": "properties.Employment.rich_text[0].text.content"
+            },
+            {
+              "field1": "city",
+              "field2": "properties.Location.rich_text[0].text.content"
+            }
+          ]
+        },
+        "joinMode": "keepNonMatches",
+        "outputDataFrom": "input1",
+        "options": {}
+      },
+      "id": "54a2377d-a1e4-4d95-9744-7bda74bc3d86",
+      "name": "Merge Filter",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        -120,
+        -460
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "RLBsw2PdWSjkPsif",
+          "mode": "list",
+          "cachedResultName": "Job Filter"
+        },
+        "options": {}
+      },
+      "id": "eb2503b1-6b31-450c-aaab-185363fbb7f3",
+      "name": "UX, AI, and Front-End Filter",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        -540,
+        -440
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "daysInterval": 2,
+              "triggerAtHour": 10,
+              "triggerAtMinute": 30
+            }
+          ]
+        }
+      },
+      "id": "f1b0385d-61aa-4c3b-8400-15377f4c7b27",
+      "name": "Every 3 days",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1340,
+        -440
+      ]
+    }
+  ],
+  "pinData": {
+    "Every 3 days": [
+      {
+        "json": {
+          "timestamp": "2024-10-22T10:30:04.017-05:00",
+          "Readable date": "October 22nd 2024, 10:30:04 am",
+          "Readable time": "10:30:04 am",
+          "Day of week": "Tuesday",
+          "Year": "2024",
+          "Month": "October",
+          "Day of month": "22",
+          "Hour": "10",
+          "Minute": "30",
+          "Second": "04",
+          "Timezone": "America/Chicago (UTC-05:00)"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Cities": {
+      "main": [
+        [
+          {
+            "node": "Split Cities",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Cities": {
+      "main": [
+        [
+          {
+            "node": "UX/Front-End Engineer Jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UX/Front-End Engineer Jobs": {
+      "main": [
+        [
+          {
+            "node": "Combine into one list",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combine into one list": {
+      "main": [
+        [
+          {
+            "node": "UX, AI, and Front-End Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Latest DB for comparison": {
+      "main": [
+        [
+          {
+            "node": "Merge Filter",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Filter": {
+      "main": [
+        [
+          {
+            "node": "Notion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UX, AI, and Front-End Filter": {
+      "main": [
+        [
+          {
+            "node": "Merge Filter",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Latest DB for comparison",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Every 3 days": {
+      "main": [
+        [
+          {
+            "node": "Cities",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c43c6dc0-dcf1-48e6-8361-e5f58abb0f6c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "eb4c4964f577dafa979a221a82566548ba2933b8a3078821a97240b3f00e627e"
+  },
+  "id": "3jniVjRCCCC93NQp",
+  "tags": []
+}

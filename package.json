@@ -1,0 +1,32 @@
+{
+  "name": "n8n-agent",
+  "version": "1.0.0",
+  "description": "Localhost n8n workflows",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "fresh-start": "npx n8n start",
+    "start": "n8n start",
+    "test": "test",
+    "scrape": "tsx src/scraper.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "n8n-agent"
+  },
+  "keywords": [
+    "n8n",
+    "automation"
+  ],
+  "author": "Vz",
+  "license": "MIT",
+  "dependencies": {
+    "n8n": "^1.64.3",
+    "puppeteer": "^23.6.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  }
+}

@@ -8,7 +8,7 @@
     "fresh-start": "npx n8n start",
     "start": "n8n start",
     "test": "test",
-    "scrape": "tsx src/scraper.ts"
+    "scrape": "pnpm tsx src/scraper.ts"
   },
   "repository": {
     "type": "git",
@@ -26,7 +26,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
-    "tsx": "^4.7.0",
+    "tsx": "^4.19.2",
     "typescript": "^5.3.3"
   }
 }

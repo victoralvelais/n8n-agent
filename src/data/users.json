@@ -1,0 +1,10 @@
+{
+  "users": [
+    {
+      "recipientId": "123456789",
+      "channelId": "987654321",
+      "username": "ExampleUser",
+      "lastInteraction": "2023-12-25T12:00:00Z"
+    }
+  ]
+}

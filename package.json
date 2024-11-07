@@ -5,10 +5,12 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "fresh-start": "npx n8n start",
     "start": "n8n start",
-    "test": "test",
-    "scrape": "pnpm tsx src/scraper.ts"
+    "fresh-start": "npx n8n start",
+    "scrape": "pnpm tsx src/scraper.ts",
+    "setup-nodes": "tsx src/custom-node-manager.ts",
+    "start-with-nodes": "pnpm setup-nodes && pnpm start",
+    "test": "test"
   },
   "repository": {
     "type": "git",
@@ -28,5 +30,6 @@
     "@types/node": "^20.11.0",
     "tsx": "^4.19.2",
     "typescript": "^5.3.3"
-  }
+  },
+  "packageManager": "pnpm@9.12.3+sha512.cce0f9de9c5a7c95bef944169cc5dfe8741abfb145078c0d508b868056848a87c81e626246cb60967cbd7fd29a6c062ef73ff840d96b3c86c40ac92cf4a813ee"
 }

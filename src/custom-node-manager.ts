@@ -38,10 +38,48 @@ export const initializeCustomNodes = async () => {
   }
 };
 
-const installNodePackage = async (nodeName: string, nodeDestination: string) => {
-  const command = `npm i ${nodeName} --prefix "${nodeDestination}"`;
+const installNodePackage = async (nodeSource: string, nodeDestination: string) => {
+  // Handle GitHub repository format
+  console.log(`Installing ${nodeSource} to ${nodeDestination}`);
+  const command = `npm i ${nodeSource} --prefix "${nodeDestination}"`;
   execSync(command);
+  
+  if (nodeSource.includes('github.com')) {
+    // Get the package name from the last part of the repo URL
+    const repoPattern = /github\.com\/(\w+)\/([a-z0-9]+(?:-[a-z0-9]+)*$)/
+    const repo = nodeSource.match(repoPattern);
+    const repoFolder = `@${repo?.[1]}/${repo?.[2]}`;
+    
+    // Change to the package directory
+    const packagePath = path.join(nodeDestination, 'node_modules', repoFolder);
+    process.chdir(packagePath);
+    
+    runCommand('npm install', nodeSource);
+    // execSync('npm install');
+    runCommand('npm run build', nodeSource);
+    // execSync('npm run build');
+  }
+
   return true;
+};
+
+const runCommand = async (cmd: string, nodeName: string) => {
+  try {
+    const output = execSync(cmd, { 
+      stdio: 'pipe',
+      encoding: 'utf-8',
+      maxBuffer: 10 * 1024 * 1024 // Increase buffer size for large outputs
+    });
+    console.log(`\n=== Installation output for ${nodeName} ===`);
+    console.log(output);
+    console.log(`=== End of installation for ${nodeName} ===\n`);
+    return true;
+  } catch (error) {
+    console.log(`\n=== Error output for ${nodeName} ===`);
+    console.log(error.stdout?.toString());
+    console.log(error.stderr?.toString());
+    throw error;
+  }
 };
 
 initializeCustomNodes();

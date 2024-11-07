@@ -13,13 +13,13 @@ const customNodePath = path.join(n8nFolder, 'nodes');
 async function setupCustomNodes() {
   // Ensure directories exist
   await fs.mkdir(customNodePath, { recursive: true });
-
   const communityNodes = config.nodes.communityNodes;
 
   for (const nodeName of communityNodes) {
     try {
       // Get node package from npm
-      await installNodePackage(nodeName, customNodePath);
+      const install = (nodeName.includes('github.com') ? installNodeGithub : installNodeNPM)
+      await install(nodeName, customNodePath);
       console.log(`Successfully installed ${nodeName} to custom node path`);
     } catch (error) {
       console.error(`Failed to install ${nodeName}:`, error);
@@ -38,29 +38,38 @@ export const initializeCustomNodes = async () => {
   }
 };
 
-const installNodePackage = async (nodeSource: string, nodeDestination: string) => {
+const installNodeNPM = async (nodeSource: string, nodeDestination: string) => {
   // Handle GitHub repository format
-  console.log(`Installing ${nodeSource} to ${nodeDestination}`);
   const command = `npm i ${nodeSource} --prefix "${nodeDestination}"`;
   execSync(command);
-  
-  if (nodeSource.includes('github.com')) {
-    // Get the package name from the last part of the repo URL
-    const repoPattern = /github\.com\/(\w+)\/([a-z0-9]+(?:-[a-z0-9]+)*$)/
-    const repo = nodeSource.match(repoPattern);
-    const repoFolder = `@${repo?.[1]}/${repo?.[2]}`;
-    
-    // Change to the package directory
-    const packagePath = path.join(nodeDestination, 'node_modules', repoFolder);
-    process.chdir(packagePath);
-    
-    runCommand('npm install', nodeSource);
-    // execSync('npm install');
-    runCommand('npm run build', nodeSource);
-    // execSync('npm run build');
+  return true;
+};
+
+const installNodeGithub = async (nodeSource: string, nodeDestination: string) => {
+  await installNodeNPM(nodeSource, nodeDestination);
+  const repoPattern = /github\.com\/(\w+)\/([a-z0-9]+(?:-[a-z0-9]+)*$)/
+  const repo = nodeSource.match(repoPattern);
+  const repoFolder = `@${repo?.[1]}/${repo?.[2]}`;
+
+  // Change to the package directory
+  const packagePath = path.join(nodeDestination, 'node_modules', repoFolder);
+  process.chdir(packagePath);
+
+  await handleGitClone(nodeSource, packagePath);
+  await runCommand('npm install', nodeSource);
+  await runCommand('npm run build', nodeSource);
+};
+
+const handleGitClone = async (nodeSource: string, packagePath: string) => {
+  console.log(`CLONING ${nodeSource} to ${packagePath}`);
+  // Clear directory using fs
+  const files = await fs.readdir(packagePath);
+  for (const file of files) {
+      const filePath = path.join(packagePath, file);
+      await fs.rm(filePath, { recursive: true, force: true });
   }
 
-  return true;
+  return runCommand(`git clone ${nodeSource} .`, nodeSource);
 };
 
 const runCommand = async (cmd: string, nodeName: string) => {

@@ -6,7 +6,7 @@ export default {
       "n8n-nodes-debughelper",
       "n8n-nodes-document-generator",
       "n8n-nodes-custom-credentials",
-      "https://github.com/kmcbride3/n8n-nodes-discord", // xp
+      "https://github.com/kmcbride3/n8n-nodes-discord",
     ]
   },
   // Example properties

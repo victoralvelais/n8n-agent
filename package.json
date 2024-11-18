@@ -6,9 +6,12 @@
   "type": "module",
   "scripts": {
     "fresh-start": "npx n8n start",
-    "start": "n8n start",
-    "test": "test",
-    "scrape": "pnpm tsx src/scraper.ts"
+    "scrape": "pnpm tsx src/scraper.ts",
+    "setup-nodes": "tsx src/custom-node-manager.ts",
+    "start-with-nodes": "pnpm setup-nodes && pnpm start",
+    "lint": "eslint nodes credentials package.json",
+    "lintfix": "eslint nodes credentials package.json --fix",
+    "test": "test"
   },
   "repository": {
     "type": "git",
@@ -26,6 +29,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
+    "eslint-plugin-n8n-nodes-base": "^1.16.3",
     "tsx": "^4.19.2",
     "typescript": "^5.3.3"
   }

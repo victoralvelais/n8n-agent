@@ -40,7 +40,7 @@ export const initializeCustomNodes = async () => {
 
 const installNodeNPM = async (nodeSource: string, nodeDestination: string) => {
   // Handle GitHub repository format
-  const command = `npm i ${nodeSource} --prefix "${nodeDestination}"`;
+  const command = `npm i ${nodeSource} --prefix "${nodeDestination} --force"`;
   execSync(command);
   return true;
 };
@@ -56,7 +56,7 @@ const installNodeGithub = async (nodeSource: string, nodeDestination: string) =>
   process.chdir(packagePath);
 
   await handleGitClone(nodeSource, packagePath);
-  await runCommand('npm install', nodeSource);
+  await runCommand('npm install --force', nodeSource);
   await runCommand('npm run build', nodeSource);
 };
 

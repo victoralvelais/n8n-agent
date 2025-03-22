@@ -5,6 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "start": "pnpm n8n start",
     "fresh-start": "npx n8n start",
     "scrape": "pnpm tsx src/scraper.ts",
     "setup-nodes": "tsx src/custom-node-manager.ts",

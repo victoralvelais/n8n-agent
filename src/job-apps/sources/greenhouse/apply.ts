@@ -1,6 +1,7 @@
 import puppeteer from 'puppeteer';
 import { fileURLToPath } from 'url';
 import { interactWithDropdown } from './dropdown.js';
+import { getAIAnswer } from '../../agentAssist.js';
 
 // Get the current file path and check if it's the main module
 const __filename = fileURLToPath(import.meta.url);
@@ -19,28 +20,40 @@ async function main(url: string) {
   // Find all input elements and select elements separately
   const standardInputs = await form.$$('input, select, textarea');
   const customSelects = await form.$$('div.select');
+  const fileploads = await form.$$('div.file-upload');
 
   // Process standard inputs
   for (const input of standardInputs) {
-    // TODO
-    console.log('standard input', input);
+    const { label, type } = await getElementProps(input);
+
+    // Skip if this is a custom select element
+    const skip = await input.evaluate(el => !!el.closest('div.select, div.file-upload'));
+    if (skip) continue;
+    
+    // Send question to API and get response
+    const { answer } = await getAIAnswer(label);
+
+    // Input the answer based on input type
+    if (type === 'textarea' || type === 'input') {
+      await input.click();
+      await page.keyboard.type(String(answer));
+    } else if (type === 'select') {
+      await input.select(answer);
+    }
+
+    console.log('Answer:', answer);
   }
 
   // Process custom select elements
   for (const select of customSelects) {
-    // TODO Dropdown is working, but no implementation for multiselect dropdown
-    await interactWithDropdown(page, select, async (options) => {
-      // For now, just select the first or 3rd option
+    const { label } = await getElementProps(select);
+    await interactWithDropdown(page, select, async (options, isMulti) => {
+      const { answer } = await getAIAnswer(label, options, isMulti);
       console.log('choosing from options:', options);
-      return options.length > 2 ? options[2] : options.length > 0 ? options[0] : null;
+      console.log('we choose:', answer);
+      return options.filter(option => answer.includes(option));
     });
   }
-
-  // Take a screenshot
-  // await page.screenshot({ path: 'example.png' });
-  // await browser.close();
-  
-  // return { title, screenshotPath: 'example.png' };
 }
 
 export default main;
@@ -53,4 +66,19 @@ if (isMainModule) {
   main(url)
   .then(result => console.log(JSON.stringify(result)))
   .catch(console.error);
+}
+
+async function getElementProps(input: puppeteer.ElementHandle<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | HTMLDivElement>) {
+  const type = await input.evaluate(el => el.tagName.toLowerCase());
+  const label = await input.evaluate(el => {
+    if ('labels' in el) return el.labels?.[0]?.textContent?.trim();
+    const labelEl = el.closest('label');
+    const childLabelEl = el.querySelector('label');
+    return (
+      labelEl?.textContent?.trim() ||
+      childLabelEl?.textContent?.trim() ||
+      'No label found'
+    );
+  });
+  return { label, type };
 }

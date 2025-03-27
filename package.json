@@ -25,6 +25,7 @@
   "author": "Vz",
   "license": "MIT",
   "dependencies": {
+    "dotenv": "^16.4.7",
     "n8n": "^1.64.3",
     "puppeteer": "^23.6.1"
   },

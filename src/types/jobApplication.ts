@@ -5,25 +5,22 @@ export interface JobApplication {
     lastName: string;
     email: string;
     phone: string;
-    
+
     // Location Information
     city: string;
     country: string;
-    
+
     // Work Eligibility
     legallyAuthorizedToWork: boolean;
     requireVisa: boolean;
-    
+
     // Experience
-    resume: File;
-    currentCompany: string;
-    
-    // Application Specific
+    resume: File | string;
     coverLetter: File | string;
-    sourceOfDiscovery: string;
   },
   
   optional: {
+    currentCompany: string;
     // Additional Personal Info
     middleName: string;
     preferredName: string;
@@ -31,11 +28,16 @@ export interface JobApplication {
     linkedInUrl: string;
     portfolioUrl: string;
     personalWebsite: string;
-    
+
     // Additional Location Info
     state: string;
     postalCode: string;
-    
+
+    // Desired Job Information
+    desiredSalary: string;
+    desiredLocation: string[];
+    relocationWillingness: boolean;
+
     // Education
     education: {
       institution: string;
@@ -44,22 +46,22 @@ export interface JobApplication {
       graduationYear: number;
       gpa: number;
     }[],
-    
+
     // Additional Documents
     additionalFiles: File[];
-    
+
     // Diversity & Inclusion
     gender: string;
     ethnicity: string;
     veteranStatus: string;
     disabilityStatus: string;
-    
+
     // Custom Questions
     customResponses: {
       questionId: string;
       response: string;
     }[],
-    
+
     // References
     references: {
       name: string;

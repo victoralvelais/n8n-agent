@@ -2,27 +2,17 @@ import { ElementHandle } from "puppeteer";
 /**
  * Interacts with a React Select dropdown - opens it, gets options, and selects one
  * @param page Puppeteer Page object
- * @param dropdownSelector Selector for the dropdown element
+ * @param dropdown Selector for the dropdown element
  * @param optionSelector Function that takes options array and returns the option to select
  * @returns Promise resolving to the selected option or null if selection failed
  */
 
-
 export async function interactWithDropdown(
   page: any, 
-  // dropdownSelector: string,
-  dropdownSelector: ElementHandle<HTMLDivElement>,
-  optionSelector: (options: string[]) => Promise<string | null>
+  dropdown: ElementHandle<HTMLDivElement>,
+  optionSelector: (options: string[], isMulti: boolean) => Promise<string | string[]>
 ): Promise<string | null> {
   try {
-    // Find the dropdown
-    // const dropdown = await page.$(dropdownSelector);
-    const dropdown = dropdownSelector;
-    if (!dropdown) {
-      console.log(`Dropdown not found: ${dropdownSelector}`);
-      return null;
-    }
-    
     // Find and click the control element to open the dropdown
     const control = await dropdown.$('.select__control');
     if (!control) {
@@ -52,27 +42,35 @@ export async function interactWithDropdown(
       const optElements = document.querySelectorAll('.select__option');
       return Array.from(optElements).map(opt => opt.textContent?.trim() || '');
     });
+
+    const isMulti = await dropdown.$('.select__value-container--is-multi')
+      .then(el => !!el);
     
     // Get the option to select using the provided selector function
-    const optionToSelect = await optionSelector(options);
-    if (!optionToSelect) {
+    const optionsToSelect = await optionSelector(options, isMulti);
+    if (!optionsToSelect.length) {
       console.log('No option selected');
       return null;
     }
     
     // Select the option
-    const selected = await page.evaluate((text: string) => {
+    const selected = await page.evaluate((texts: string[]) => {
       const options = document.querySelectorAll('.select__option');
-      const option = Array.from(options).find(opt => 
-        opt.textContent?.trim() === text
-      );
+      const selectedTexts: string[] = [];
       
-      if (option) {
-        (option as HTMLElement).click();
-        return text;
-      }
-      return null;
-    }, optionToSelect);
+      texts.forEach(text => {
+        const option = Array.from(options).find(opt => 
+          opt.textContent?.trim() === text
+        );
+        
+        if (option) {
+          (option as HTMLElement).click();
+          selectedTexts.push(text);
+        }
+      });
+      
+      return selectedTexts.length ? selectedTexts : null;
+    }, optionsToSelect);
     
     return selected;
   } catch (error) {

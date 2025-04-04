@@ -14,6 +14,9 @@ importers:
       n8n:
         specifier: ^1.64.3
         version: 1.64.3(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-bedrock-agent-runtime@3.682.0)(@aws-sdk/client-bedrock-runtime@3.682.0)(@aws-sdk/client-kendra@3.682.0)(@aws-sdk/client-s3@3.682.0)(@aws-sdk/client-sts@3.682.0)(@aws-sdk/credential-provider-node@3.682.0(@aws-sdk/client-sso-oidc@3.666.0(@aws-sdk/client-sts@3.682.0))(@aws-sdk/client-sts@3.682.0))(@aws-sdk/credential-providers@3.682.0(@aws-sdk/client-sso-oidc@3.666.0(@aws-sdk/client-sts@3.682.0)))(@azure/storage-blob@12.18.0(encoding@0.1.13))(@google-cloud/storage@7.13.0(encoding@0.1.13))(@smithy/util-utf8@2.3.0)(asn1.js@5.4.1)(crypto-js@4.2.0)(date-fns@2.30.0)(encoding@0.1.13)(gcp-metadata@5.3.0(encoding@0.1.13))(google-auth-library@9.14.2(encoding@0.1.13))(ignore@5.3.2)(mssql@10.0.2)(openai@4.63.0(encoding@0.1.13)(zod@3.23.8))(promise-ftp-common@1.1.5)(puppeteer@23.6.1(typescript@5.6.3))(redis@4.6.12)(socks@2.8.3)(ts-node@10.9.2(@types/node@20.17.3)(typescript@5.6.3))(ts-toolbelt@9.6.0)(tslib@2.8.0)(typescript@5.6.3)
+      pdfjs-dist:
+        specifier: ^5.1.91
+        version: 5.1.91
       puppeteer:
         specifier: ^23.6.1
         version: 23.6.1(typescript@5.6.3)
@@ -1652,6 +1655,70 @@ packages:
 
   '@n8n_io/riot-tmpl@4.0.1':
     resolution: {integrity: sha512-/zdRbEfTFjsm1NqnpPQHgZTkTdbp5v3VUxGeMA9098sps8jRCTraQkc3AQstJgHUm7ylBXJcIVhnVeLUMWAfwQ==}
+
+  '@napi-rs/canvas-android-arm64@0.1.68':
+    resolution: {integrity: sha512-h1KcSR4LKLfRfzeBH65xMxbWOGa1OtMFQbCMVlxPCkN1Zr+2gK+70pXO5ktojIYcUrP6KDcOwoc8clho5ccM/w==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [android]
+
+  '@napi-rs/canvas-darwin-arm64@0.1.68':
+    resolution: {integrity: sha512-/VURlrAD4gDoxW1GT/b0nP3fRz/fhxmHI/xznTq2FTwkQLPOlLkDLCvTmQ7v6LtGKdc2Ed6rvYpRan+JXThInQ==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@napi-rs/canvas-darwin-x64@0.1.68':
+    resolution: {integrity: sha512-tEpvGR6vCLTo1Tx9wmDnoOKROpw57wiCWwCpDOuVlj/7rqEJOUYr9ixW4aRJgmeGBrZHgevI0EURys2ER6whmg==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@napi-rs/canvas-linux-arm-gnueabihf@0.1.68':
+    resolution: {integrity: sha512-U9xbJsumPOiAYeAFZMlHf62b9dGs2HJ6Q5xt7xTB0uEyPeurwhgYBWGgabdsEidyj38YuzI/c3LGBbSQB3vagw==}
+    engines: {node: '>= 10'}
+    cpu: [arm]
+    os: [linux]
+
+  '@napi-rs/canvas-linux-arm64-gnu@0.1.68':
+    resolution: {integrity: sha512-KFkn8wEm3mPnWD4l8+OUUkxylSJuN5q9PnJRZJgv15RtCA1bgxIwTkBhI/+xuyVMcHqON9sXq7cDkEJtHm35dg==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@napi-rs/canvas-linux-arm64-musl@0.1.68':
+    resolution: {integrity: sha512-IQzts91rCdOALXBWQxLZRCEDrfFTGDtNRJMNu+2SKZ1uT8cmPQkPwVk5rycvFpvgAcmiFiOSCp1aRrlfU8KPpQ==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@napi-rs/canvas-linux-riscv64-gnu@0.1.68':
+    resolution: {integrity: sha512-e9AS5UttoIKqXSmBzKZdd3NErSVyOEYzJfNOCGtafGk1//gibTwQXGlSXmAKuErqMp09pyk9aqQRSYzm1AQfBw==}
+    engines: {node: '>= 10'}
+    cpu: [riscv64]
+    os: [linux]
+
+  '@napi-rs/canvas-linux-x64-gnu@0.1.68':
+    resolution: {integrity: sha512-Pa/I36VE3j57I3Obhrr+J48KGFfkZk2cJN/2NmW/vCgmoF7kCP6aTVq5n+cGdGWLd/cN9CJ9JvNwEoMRDghu0g==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+
+  '@napi-rs/canvas-linux-x64-musl@0.1.68':
+    resolution: {integrity: sha512-9c6rkc5195wNxuUHJdf4/mmnq433OQey9TNvQ9LspJazvHbfSkTij8wtKjASVQsJyPDva4fkWOeV/OQ7cLw0GQ==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+
+  '@napi-rs/canvas-win32-x64-msvc@0.1.68':
+    resolution: {integrity: sha512-Fc5Dez23u0FoSATurT6/w1oMytiRnKWEinHivdMvXpge6nG4YvhrASrtqMk8dGJMVQpHr8QJYF45rOrx2YU2Aw==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [win32]
+
+  '@napi-rs/canvas@0.1.68':
+    resolution: {integrity: sha512-LQESrePLEBLvhuFkXx9jjBXRC2ClYsO5mqQ1m/puth5z9SOuM3N/B3vDuqnC3RJFktDktyK9khGvo7dTkqO9uQ==}
+    engines: {node: '>= 10'}
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -5452,6 +5519,10 @@ packages:
     peerDependenciesMeta:
       worker-loader:
         optional: true
+
+  pdfjs-dist@5.1.91:
+    resolution: {integrity: sha512-qSIADdagooJB4wWCBnrBJjRvASevmxL0BwafvOuKJG5uTQdYoFBrhrRYnucKNiSc9qS6JIk0hC5y1yktFljXkA==}
+    engines: {node: '>=20'}
 
   peberminta@0.9.0:
     resolution: {integrity: sha512-XIxfHpEuSJbITd1H3EeQwpcZbTLHc+VVr8ANI9t5sit565tsI4/xK3KWTUFE2e6QiangUkh3B0jihzmGnNrRsQ==}
@@ -9501,6 +9572,50 @@ snapshots:
   '@n8n_io/riot-tmpl@4.0.1':
     dependencies:
       eslint-config-riot: 1.0.0
+
+  '@napi-rs/canvas-android-arm64@0.1.68':
+    optional: true
+
+  '@napi-rs/canvas-darwin-arm64@0.1.68':
+    optional: true
+
+  '@napi-rs/canvas-darwin-x64@0.1.68':
+    optional: true
+
+  '@napi-rs/canvas-linux-arm-gnueabihf@0.1.68':
+    optional: true
+
+  '@napi-rs/canvas-linux-arm64-gnu@0.1.68':
+    optional: true
+
+  '@napi-rs/canvas-linux-arm64-musl@0.1.68':
+    optional: true
+
+  '@napi-rs/canvas-linux-riscv64-gnu@0.1.68':
+    optional: true
+
+  '@napi-rs/canvas-linux-x64-gnu@0.1.68':
+    optional: true
+
+  '@napi-rs/canvas-linux-x64-musl@0.1.68':
+    optional: true
+
+  '@napi-rs/canvas-win32-x64-msvc@0.1.68':
+    optional: true
+
+  '@napi-rs/canvas@0.1.68':
+    optionalDependencies:
+      '@napi-rs/canvas-android-arm64': 0.1.68
+      '@napi-rs/canvas-darwin-arm64': 0.1.68
+      '@napi-rs/canvas-darwin-x64': 0.1.68
+      '@napi-rs/canvas-linux-arm-gnueabihf': 0.1.68
+      '@napi-rs/canvas-linux-arm64-gnu': 0.1.68
+      '@napi-rs/canvas-linux-arm64-musl': 0.1.68
+      '@napi-rs/canvas-linux-riscv64-gnu': 0.1.68
+      '@napi-rs/canvas-linux-x64-gnu': 0.1.68
+      '@napi-rs/canvas-linux-x64-musl': 0.1.68
+      '@napi-rs/canvas-win32-x64-msvc': 0.1.68
+    optional: true
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
@@ -14612,6 +14727,10 @@ snapshots:
     dependencies:
       dommatrix: 1.0.3
       web-streams-polyfill: 3.3.3
+
+  pdfjs-dist@5.1.91:
+    optionalDependencies:
+      '@napi-rs/canvas': 0.1.68
 
   peberminta@0.9.0: {}
 

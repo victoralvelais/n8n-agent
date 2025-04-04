@@ -2,6 +2,8 @@ import puppeteer from 'puppeteer';
 import { fileURLToPath } from 'url';
 import { interactWithDropdown } from './dropdown.js';
 import { getAIAnswer } from '../../agentAssist.js';
+import { getElementProps } from './inputs.js';
+import { handleFileUploads } from './resume.js';
 
 // Get the current file path and check if it's the main module
 const __filename = fileURLToPath(import.meta.url);
@@ -17,10 +19,12 @@ async function main(url: string) {
   const form = await page.waitForSelector('form')
   if (!form) throw new Error('Form not found');
 
+  await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 3000)));
+
   // Find all input elements and select elements separately
   const standardInputs = await form.$$('input, select, textarea');
   const customSelects = await form.$$('div.select');
-  const fileploads = await form.$$('div.file-upload');
+  const fileUploads = await form.$$('div.file-upload');
 
   // Process standard inputs
   for (const input of standardInputs) {
@@ -54,8 +58,11 @@ async function main(url: string) {
       return options.filter(option => answer.includes(option));
     });
   }
-}
 
+  for (const fileUpload of fileUploads) {
+    await handleFileUploads(fileUpload, page);
+  }
+}
 export default main;
 
 // Only run if directly executed
@@ -66,19 +73,4 @@ if (isMainModule) {
   main(url)
   .then(result => console.log(JSON.stringify(result)))
   .catch(console.error);
-}
-
-async function getElementProps(input: puppeteer.ElementHandle<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | HTMLDivElement>) {
-  const type = await input.evaluate(el => el.tagName.toLowerCase());
-  const label = await input.evaluate(el => {
-    if ('labels' in el) return el.labels?.[0]?.textContent?.trim();
-    const labelEl = el.closest('label');
-    const childLabelEl = el.querySelector('label');
-    return (
-      labelEl?.textContent?.trim() ||
-      childLabelEl?.textContent?.trim() ||
-      'No label found'
-    );
-  });
-  return { label, type };
 }

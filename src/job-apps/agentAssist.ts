@@ -8,11 +8,11 @@ const AI_ENDPOINT = process.env.AI_ENDPOINT;
 
 export async function getAIAnswer(question: string, options?: string[], multiselect?: boolean) {
   if (!AI_ENDPOINT) throw new Error('AI_ENDPOINT not set in .env');
-  const { systemPrompt, userPrompt } = buildPrompt(question, options, multiselect);
+  const { systemMessage, prompt } = buildPrompt(question, options, multiselect);
   const response = await fetch(AI_ENDPOINT, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ systemPrompt, userPrompt }),
+    body: JSON.stringify({ systemMessage, prompt }),
   });
 
   const data = await response.json();
@@ -42,9 +42,11 @@ export async function getAIAnswer(question: string, options?: string[], multisel
 const buildPrompt = (question: string, options?: string[], multiselect?: boolean) => {
   const resume = parseResume();
   const profile = { ...JobApplication, resume };
-  const systemPrompt = `You are a helpful online form filling assistant. Evaluate the inputs provided, think about what information they're asking the user, and select the best answer from the user's profile. Your answer should be succinctly a string message or array of strings`;
+  const temperature = 0.3;
 
-  const userPrompt = `Help me fill out this job application form. I've filled out my profile. Select the best response to this question, only providing the value I should input: ${question}${options ? `\n\nAnswer Options: ${options.join(', ')}` : ''}${multiselect ? '\n\n*This quesiton is multi-select, so choose as many as relevant to the user as a string array answer*' : ''}\n\nUser Profile: ${JSON.stringify(profile)}`;
+  const systemMessage = `You are a helpful online form filling assistant. Evaluate the inputs provided, think about what information they're asking the user, and select the best answer from the user's profile. Format your answer as a JSON object: { "answer": string | string[], "confidence": number } where confidence is a number between 0 and 1.`;
 
-  return { systemPrompt, userPrompt };
+  const prompt = `Help me fill out this job application form. I've filled out my profile. Select the best response to this question, only providing the value I should input: ${question}${options ? `\n\nAnswer Options: ${options.join(', ')}` : ''}${multiselect ? '\n\n*This quesiton is multi-select, so choose as many as relevant to the user as a string array answer*' : ''}\n\nUser Profile: ${JSON.stringify(profile)}`;
+
+  return { systemMessage, prompt, temperature };
 }
